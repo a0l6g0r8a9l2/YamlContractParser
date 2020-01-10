@@ -3,15 +3,8 @@ import pprint as pp
 from dataclasses import dataclass
 import pandas as pd
 
-
-# def getPathNode():
-#     """
-#     Обращается к getDataContract
-#     :return: нода 'paths'
-#     """
-#     pathNode = getDataContract()['paths']
-#     # pp.pprint(data['paths'])
-#     return pathNode
+# TODO: Сейчас выводятся обрбатываются вх. параметры. Переределать на сиходящие.
+#  Добавить в анализ словарь definitions -> responses (матчить из path)
 
 
 def getDataContract():
@@ -74,6 +67,8 @@ for subPath, parsms in getDataContract()['paths'].items():
 
 # df = pd.DataFrame(data) export_excel = df.to_excel(
 # r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx', index=None, header=False)
+
+# TODO: добавить вывод в excel построчно
 
 parametrs = Params(getDataContract()['basePath'], path=subPaths, methodName=methodNames,
                    paramName=pamNames, paramDiscrip=paramDescrip, paramType=pamTypes)
