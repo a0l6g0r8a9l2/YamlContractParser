@@ -56,6 +56,16 @@ for subPath, parsms in getDataContract()['paths'].items():
                         # print(nameParamIn, typeParamIn, end='\n')
                         itemPathList = (item['operationId'] + 'Request' + '/' + nameParamIn, typeParamIn)
                         pathList.append(itemPathList)
+                    else:  # ветка с посиком в "definitions"
+                        if '$ref' in items['schema'].keys():
+                            definNode, defineNodeName = items['schema']['$ref'].split('/')[1:3]  # нода и наименвание
+                            # объекта в которых нужно искать
+                            for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
+                                nameParamIn, typeParamIn = dkeys, ditems['type']  # вх. параметры
+                                itemPathList = (item['operationId'] + 'Request' + '/' + nameParamIn, typeParamIn)
+                                pathList.append(itemPathList)
+
+
 print(pathList)
 # df = pd.DataFrame(data) export_excel = df.to_excel(
 # r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx', index=None, header=False)
