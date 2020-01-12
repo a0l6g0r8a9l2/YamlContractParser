@@ -114,14 +114,41 @@ def getParamsOut():
                     # parameters (?), инчае в "definitions"
                     pass  # пустой Response
                 else:  # ветка с посиком в "definitions"
-                    if '$ref' in vals['schema'].keys():
-                        definNode, defineNodeName = vals['schema']['$ref'].split('/')[1:3]  # нода и наименвание
-                        # объекта в которых нужно искать
-                        for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
-                            nameParamOut, typeParamOut = dkeys, ditems['type']  # вх. параметры
-                            itemParmOutList = (items[0] + 'Response' + '/' + nameParamOut, typeParamOut)
-                            paramOutList.append(itemParmOutList)
+                    for itemsSearch in searchInDefinitions(vals, node='schema', msgType='Response'):
+                        itemParmOutList = (items[0] + 'Response' + '/' + itemsSearch[0], itemsSearch[1])
+                        # if '$ref' in vals['schema'].keys():  # вместо schema - items, для вложенных объектов
+                        #     definNode, defineNodeName = vals['schema']['$ref'].split('/')[1:3]  # нода и наименвание
+                        #     # объекта в которых нужно искать
+                        #     for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
+                        #         nameParamOut, typeParamOut = dkeys, ditems['type']  # вх. параметры
+                        #         itemParmOutList = (items[0] + 'Response' + '/' + nameParamOut, typeParamOut)
+                        paramOutList.append(itemParmOutList)
     return paramOutList
+
+
+def searchInDefinitions(vals, node='schema', msgType='Response', itemParmList=[], nameItemNode=''):
+    """
+    Рекурсивная функция для обработки ноды "definitions" (в т.ч.вложенных элементов)
+    :param vals: словарь для поиска параметров
+    :param node: schema/items
+    :param msgType: request/response
+    :param itemParmList: список уже полученных параметров
+    :param nameItemNode: наименование вложенной коллекции
+    :return: список кортежей из:
+        - метод/параметр
+        - тип параметра
+    """
+    if '$ref' in vals[node].keys():  # вместо schema - items, для вложенных объектов
+        definNode, defineNodeName = vals[node]['$ref'].split('/')[1:3]  # нода и наименвание
+        # объекта в которых нужно искать
+        for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
+            if 'items' in ditems:  # and ditems['type'] == 'array'
+                nameItemNode = dkeys + '/'
+                searchInDefinitions(ditems, 'items', itemParmList=itemParmList, nameItemNode=nameItemNode)
+            else:
+                nameParamOut, typeParamOut = nameItemNode + dkeys, ditems['type']  # параметры
+                itemParmList.append((nameParamOut, typeParamOut))
+    return itemParmList
 
 
 for i in getParamsIn():
