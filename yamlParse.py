@@ -22,26 +22,6 @@ def getDataContract():
 # pp.pprint(data['basePath'])
 # pp.pprint(data['host'])
 
-
-# @dataclass
-# class Path:
-#     subPath: str
-
-
-@dataclass
-class Method:
-    # path: list
-    # methodType: str
-    methodName: list
-
-
-@dataclass
-class Params(Method):
-    paramName: list
-    paramDiscrip: list
-    paramType: list
-
-
 def parsePathsNode():
     """
     Функция парсит ноду 'paths' в контракте
@@ -74,27 +54,38 @@ def getParamsIn():
     # TODO: добавить обязательность параметра в вывод
     listPathItemsIn = parsePathsNode()
     paramInList = []
+    msgType = 'Request'
+    nodeSchemaName = 'schema'
     for items in listPathItemsIn:
         if items[1] is not None:
             for childItems in items[1]:
                 if 'schema' not in childItems.keys():  # если нет ключа "schema" значит. вх. параметры ищем в
                     # parameters, инчае в "definitions"
+                    # print(childItems.keys())
                     nameParamIn, typeParamIn = childItems['name'], childItems['type']  # вх. параметры
                     # print(nameParamIn, typeParamIn, end='\n')
-                    itemParmInList = (items[0] + 'Request' + '/' + nameParamIn, typeParamIn)
+                    itemParmInList = (items[0] + msgType + '/' + nameParamIn, typeParamIn)
                     paramInList.append(itemParmInList)
                 else:  # ветка с посиком в "definitions"
+                    # TODO: putAssetFavorites не поппал в вывод
+                    # dict_items([('description', 'Successful operation'),
+                    #             ('schema', {'type': 'array', 'items': {'$ref': '#/definitions/Industry'}})])
+                    # dict_items([('description', 'Successful operation'),
+                    #             ('schema', {'type': 'array', 'items': {'$ref': '#/definitions/BrokerAsset'}})])
+                    # dict_items([('description', 'OK'),
+                    #             ('schema', {'type': 'array', 'items': {'$ref': '#/definitions/BrokerAssetRate'}})])
+                    # dict_items([('description', 'OK'), ('schema', {'type': 'object', 'properties': {
+                    #     'isFavorite': {'description': 'True если актив присутствует в избранном',
+                    #                    'type': 'boolean'}}})])
+                    print(childItems.items())
                     if '$ref' in childItems['schema'].keys():
                         definNode, defineNodeName = childItems['schema']['$ref'].split('/')[1:3]  # нода и наименвание
                         # объекта в которых нужно искать
                         for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
                             nameParamIn, typeParamIn = dkeys, ditems['type']  # вх. параметры
-                            itemParmInList = (items[0] + 'Request' + '/' + nameParamIn, typeParamIn)
+                            itemParmInList = (items[0] + msgType + '/' + nameParamIn, typeParamIn)
                             paramInList.append(itemParmInList)
     return paramInList
-
-
-# TODO: Добавить обработку объектов в "definitions" содержащих ссылки на другие объекты в "definitions". Нужна рекурсия?
 
 
 def getParamsOut():
@@ -107,21 +98,17 @@ def getParamsOut():
     # TODO: добавить обязательность параметра в вывод
     listPathItemsOut = parsePathsNode()
     paramOutList = []
+    msgType = 'Response'
+    nodeSchemaName = 'schema'
     for items in listPathItemsOut:
         for keys, vals in items[2].items():
             if keys == '200':
                 if 'schema' not in vals.keys():  # если нет ключа "schema" значит. исх. параметры ищем в
                     # parameters (?), инчае в "definitions"
                     pass  # пустой Response
-                else:  # ветка с посиком в "definitions"
-                    for itemsSearch in searchInDefinitions(vals, node='schema', msgType='Response'):
-                        itemParmOutList = (items[0] + 'Response' + '/' + itemsSearch[0], itemsSearch[1])
-                        # if '$ref' in vals['schema'].keys():  # вместо schema - items, для вложенных объектов
-                        #     definNode, defineNodeName = vals['schema']['$ref'].split('/')[1:3]  # нода и наименвание
-                        #     # объекта в которых нужно искать
-                        #     for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
-                        #         nameParamOut, typeParamOut = dkeys, ditems['type']  # вх. параметры
-                        #         itemParmOutList = (items[0] + 'Response' + '/' + nameParamOut, typeParamOut)
+                else:  # ветка с поиcком в "definitions"
+                    for itemsSearch in searchInDefinitions(vals, node=nodeSchemaName, msgType=msgType):
+                        itemParmOutList = (items[0] + msgType + '/' + itemsSearch[0], itemsSearch[1])
                         paramOutList.append(itemParmOutList)
     return paramOutList
 
@@ -146,8 +133,8 @@ def searchInDefinitions(vals, node='schema', msgType='Response', itemParmList=[]
                 nameItemNode = dkeys + '/'
                 searchInDefinitions(ditems, 'items', itemParmList=itemParmList, nameItemNode=nameItemNode)
             else:
-                nameParamOut, typeParamOut = nameItemNode + dkeys, ditems['type']  # параметры
-                itemParmList.append((nameParamOut, typeParamOut))
+                nameParam, typeParam = nameItemNode + dkeys, ditems['type']  # параметры
+                itemParmList.append((nameParam, typeParam))
     return itemParmList
 
 
