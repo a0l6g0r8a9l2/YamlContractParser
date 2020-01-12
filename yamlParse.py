@@ -71,9 +71,10 @@ def getParamsIn():
         - метод/параметр
         - тип параметра
     """
-    listPathItems = parsePathsNode()
+    # TODO: добавить обязательность параметра в вывод
+    listPathItemsIn = parsePathsNode()
     paramInList = []
-    for items in listPathItems:
+    for items in listPathItemsIn:
         if items[1] is not None:
             for childItems in items[1]:
                 if 'schema' not in childItems.keys():  # если нет ключа "schema" значит. вх. параметры ищем в
@@ -93,9 +94,41 @@ def getParamsIn():
     return paramInList
 
 
+# TODO: Добавить обработку объектов в "definitions" содержащих ссылки на другие объекты в "definitions". Нужна рекурсия?
+
+
+def getParamsOut():
+    """
+    Функция возвращет исх. параметры используя parsePathsNode ()
+    :return: список кортежей из:
+        - метод/параметр
+        - тип параметра
+    """
+    # TODO: добавить обязательность параметра в вывод
+    listPathItemsOut = parsePathsNode()
+    paramOutList = []
+    for items in listPathItemsOut:
+        for keys, vals in items[2].items():
+            if keys == '200':
+                if 'schema' not in vals.keys():  # если нет ключа "schema" значит. исх. параметры ищем в
+                    # parameters (?), инчае в "definitions"
+                    pass  # пустой Response
+                else:  # ветка с посиком в "definitions"
+                    if '$ref' in vals['schema'].keys():
+                        definNode, defineNodeName = vals['schema']['$ref'].split('/')[1:3]  # нода и наименвание
+                        # объекта в которых нужно искать
+                        for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
+                            nameParamOut, typeParamOut = dkeys, ditems['type']  # вх. параметры
+                            itemParmOutList = (items[0] + 'Response' + '/' + nameParamOut, typeParamOut)
+                            paramOutList.append(itemParmOutList)
+    return paramOutList
+
+
 for i in getParamsIn():
     print(i)
 
+for j in getParamsOut():
+    print(j)
 
 # pp.pprint(paramInList)
 # df = pd.DataFrame(data) export_excel = df.to_excel(
