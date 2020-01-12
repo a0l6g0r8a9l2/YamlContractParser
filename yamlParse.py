@@ -23,14 +23,14 @@ def getDataContract():
 # pp.pprint(data['host'])
 
 
-@dataclass
-class Path:
-    subPath: str
+# @dataclass
+# class Path:
+#     subPath: str
 
 
 @dataclass
-class Method(Path):
-    path: list
+class Method:
+    # path: list
     # methodType: str
     methodName: list
 
@@ -42,31 +42,62 @@ class Params(Method):
     paramType: list
 
 
-pathList = []
-for subPath, parsms in getDataContract()['paths'].items():
-    # subPaths.append(subPath)  # путь до метода
-    for item in parsms.values():
-        # print("methodName: " + item['operationId'], end='\n')  # метод
-        for keys, vals in item.items():
-            if keys == 'parameters':
-                for items in vals:
-                    if 'schema' not in items.keys():  # если нет ключа "schema" значит. вх. параметры ищем в
-                        # parameters, инчае в "definitions"
-                        nameParamIn, typeParamIn = items['name'], items['type']  # вх. параметры
-                        # print(nameParamIn, typeParamIn, end='\n')
-                        itemPathList = (item['operationId'] + 'Request' + '/' + nameParamIn, typeParamIn)
-                        pathList.append(itemPathList)
-                    else:  # ветка с посиком в "definitions"
-                        if '$ref' in items['schema'].keys():
-                            definNode, defineNodeName = items['schema']['$ref'].split('/')[1:3]  # нода и наименвание
-                            # объекта в которых нужно искать
-                            for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
-                                nameParamIn, typeParamIn = dkeys, ditems['type']  # вх. параметры
-                                itemPathList = (item['operationId'] + 'Request' + '/' + nameParamIn, typeParamIn)
-                                pathList.append(itemPathList)
+def parsePathsNode():
+    """
+    Функция парсит ноду 'paths' в контракте
+    :return: список кортежей из:
+        - имя метода (operationId)
+        - нода (dict) с вх. параметрами или None
+        - нода (dict) c исх. пареметрами (responses)
+    """
+    listPathItems = []
+    for subPath, parsms in getDataContract()['paths'].items():
+        # subPaths.append(subPath)  # путь до метода
+        for item in parsms.values():
+            if 'parameters' in item.keys():
+                # print('No params in: ',  item)
+                methodName, parameters, responses = item['operationId'], item['parameters'], item['responses']
+            else:
+                methodName, parameters, responses = item['operationId'], None, item['responses']
+                # print('Has params in: ', item)
+            listPathItems.append((methodName, parameters, responses))
+    return listPathItems
 
 
-print(pathList)
+def getParamsIn():
+    """
+    Функция возвращет вх. параметры используя parsePathsNode ()
+    :return: список кортежей из:
+        - метод/параметр
+        - тип параметра
+    """
+    listPathItems = parsePathsNode()
+    paramInList = []
+    for items in listPathItems:
+        if items[1] is not None:
+            for childItems in items[1]:
+                if 'schema' not in childItems.keys():  # если нет ключа "schema" значит. вх. параметры ищем в
+                    # parameters, инчае в "definitions"
+                    nameParamIn, typeParamIn = childItems['name'], childItems['type']  # вх. параметры
+                    # print(nameParamIn, typeParamIn, end='\n')
+                    itemParmInList = (items[0] + 'Request' + '/' + nameParamIn, typeParamIn)
+                    paramInList.append(itemParmInList)
+                else:  # ветка с посиком в "definitions"
+                    if '$ref' in childItems['schema'].keys():
+                        definNode, defineNodeName = childItems['schema']['$ref'].split('/')[1:3]  # нода и наименвание
+                        # объекта в которых нужно искать
+                        for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
+                            nameParamIn, typeParamIn = dkeys, ditems['type']  # вх. параметры
+                            itemParmInList = (items[0] + 'Request' + '/' + nameParamIn, typeParamIn)
+                            paramInList.append(itemParmInList)
+    return paramInList
+
+
+for i in getParamsIn():
+    print(i)
+
+
+# pp.pprint(paramInList)
 # df = pd.DataFrame(data) export_excel = df.to_excel(
 # r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx', index=None, header=False)
 
