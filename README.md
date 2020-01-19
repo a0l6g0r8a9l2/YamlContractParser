@@ -1,2 +1,2 @@
 # YamlContractParser
-## Simple contracte parser mostly to Analitics needs
+## Simple contracte (Open API) parser mostly to Analitics needs
