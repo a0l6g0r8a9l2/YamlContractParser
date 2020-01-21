@@ -11,7 +11,6 @@ def parseRequest():
         - имя параметра
         - тип параметра
     """
-    listPathItems = []
     msgType = 'Request'
     for subPath, parsms in getDataContract()['paths'].items():
         for item in parsms.values():
@@ -45,11 +44,9 @@ def parseResposne():
             if 'responses' in item.keys():  # not empty Response
                 for keys, vals in item['responses'].items():
                     if keys == '200':
-                        # print(keys, vals, type(vals))
                         if 'schema' not in vals:
                             allResponseParams.append((methodName + msgType + '/', None, None))
                         else:  # функция поиска в schema def
-                            # print('Schema in :', vals)
                             if '$ref' in vals['schema']:
                                 definSearch(vals['schema'], method=methodName, msgType=msgType)
                             else:  # 'properties'
@@ -103,16 +100,23 @@ def propSearch(obj: dict, nestedCollection: str = '', method: str = '', msgType:
 
 
 def definSearch(obj: dict, nestedCollection: str = '', method: str = '', msgType: str = 'Request'):
-    # todo: разобраться почему не паристся в путь вложенная нода
     """
     defenition def
-    :param obj: словарь с ключем '$ref'
+    :param obj: словарь объекта definitions
     :param nestedCollection: вложенная коллекция (другой объект в defenition)
     :param method: имя метода
     :param msgType: тип сообщения
     :return: None (добавляет кортежи с параметрами в нужный словарь)
     """
-    if '$ref' in obj.keys():
+    if 'items' in obj.keys() and '$ref' in obj['items']:
+        definNode, defineNodeName = obj['items']['$ref'].split('/')[1:3]
+        for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
+            nameParam, typeParam = method + msgType + '/' + nestedCollection + dkeys, ditems['type']  # параметры
+            if msgType == 'Request':
+                allRequestParams.append((nameParam, typeParam))
+            else:
+                allResponseParams.append((nameParam, typeParam))
+    elif '$ref' in obj.keys():
         definNode, defineNodeName = obj['$ref'].split('/')[1:3]
         for dkeys, ditems in getDataContract()[definNode][defineNodeName]['properties'].items():
             if 'items' in ditems:  # and ditems['type'] == 'array'
