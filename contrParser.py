@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from yamlParse import getDataContract
+from yamlParser import getDataContract
 
 
 def parseRequest():
@@ -36,7 +36,6 @@ def parseResposne():
         - имя параметра
         - тип параметра
     """
-    listPathItems = []
     msgType = 'Response'
     for subPath, parsms in getDataContract()['paths'].items():
         for item in parsms.values():
