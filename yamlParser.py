@@ -1,23 +1,32 @@
-import yaml
+from __future__ import annotations
+
+import pandas as pd
 
 
-def getDataContract():
-    """
-    Функция считывает yaml
-    :return: все данные контракта в объекте
-    """
-    with open(r'C:\Users\Алексей\Documents\example_yaml\FinancialInstrument v1.15.yaml', 'rt', encoding='utf-8') as ya:
-        contract = ya.read()
-    data = yaml.safe_load(contract)
-    return data
+class ContractData:
 
-# df = pd.DataFrame(data) export_excel = df.to_excel(
-# r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx', index=None, header=False)
+    def __init__(self, data: dict, allRequestParams: list = [], allResponseParams: list = []):
+        self.data = data
+        self.allRequestParams = allRequestParams
+        self.allResponseParams = allResponseParams
 
-# TODO: добавить вывод в excel построчно
 
-# parametrs = Params(getDataContract()['basePath'], path=subPaths, methodName=methodNames,
-#                    paramName=pamNames, paramDiscrip=paramDescrip, paramType=pamTypes)
-# print(parametrs.subPath + parametrs.path[1] + '/' + parametrs.paramName[1])
+class ContractDataViewer:
+
+    def __init__(self, allRequestParams: list = [], allResponseParams: list = []):
+        self.allResponseParams = allRequestParams
+        self.allRequestParams = allResponseParams
+
+    def ViewAsExcel(self):
+        paramList = []
+        paramList.extend(self.allRequestParams)
+        paramList.extend(self.allResponseParams)
+        df = pd.DataFrame(paramList)
+        try:
+            df.to_excel(r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx',
+                        index=None, header=False)
+            print("Job is Done! Go see Excel")
+        except Exception:
+            print("Что-то пошло не так при сохранении в Excel")
 
 # todo:консольный интерфейс: colorama - цветные сообщения, pyinstaller - упаковщик в exe
