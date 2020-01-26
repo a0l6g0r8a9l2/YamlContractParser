@@ -13,9 +13,10 @@ def getDataContract():
     :return: все данные контракта в объекте
     """
     init()
-    print(Fore.GREEN, Style.DIM + """Dumb contraract path parser based on Swagger Open API Specification\n
-    https://swagger.io/docs/specification/ \n
-    Возвращает список вида: "operationId/../parametrName, parametrType" в excel для копипаста \n""")
+    print(Fore.GREEN, Style.DIM +
+          """Dumb contraract path parser based on Swagger Open API Specification.
+    https://swagger.io/docs/specification/
+    Return list like: "operationId/../parametrName, parametrType" in Excel\n""")
     path = str(input("Введите полный путь до файла : \n"))
     if p.isfile(path):
         with open(path, 'rt', encoding='utf-8') as ya:
@@ -33,5 +34,4 @@ def getDataContract():
         return print("Указанный путь не корректен!")
 
 
-if __name__ == "__main__":
-    getDataContract()
+getDataContract()
