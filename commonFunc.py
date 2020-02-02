@@ -19,14 +19,13 @@ class CommonNodeParser:
             имя параметра
             тип параметра
         """
-        for items in nodeObj.keys():
-            if items == 'items' and '$ref' in nodeObj['items']:
-                self.definSearch(nodeObj['items'])
-            elif 'properties' in nodeObj.keys():  # and '$ref' in items.keys():
-                self.propSearch(nodeObj)
-            else:
-                nameParam, typeParam = self.methodName + self.msgType + '/' + nodeObj['name'], nodeObj['type']
-                self.contrObj.saveParams(self.msgType, (nameParam, typeParam))
+        if nodeObj.get('items') and '$ref' in nodeObj['items']:
+            self.definSearch(nodeObj['items'])
+        elif 'properties' in nodeObj.keys():  # and '$ref' in items.keys():
+            self.propSearch(nodeObj)
+        else:
+            nameParam, typeParam = self.methodName + self.msgType + '/' + nodeObj['name'], nodeObj['type']
+            self.contrObj.saveParams(self.msgType, (nameParam, typeParam))
 
     def propSearch(self, nodeObj: dict, nestedCollection: str = ''):
         """

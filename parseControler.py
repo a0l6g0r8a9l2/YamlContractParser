@@ -12,9 +12,9 @@ class ContractData:
 
     def saveParams(self, msgType: str, params: tuple):
         if msgType == 'Request':
-            return self.allRequestParams.append(params)
+            self.allRequestParams.append(params)
         else:
-            return self.allResponseParams.append(params)
+            self.allResponseParams.append(params)
 
     def ViewAsExcel(self):
         paramList = []

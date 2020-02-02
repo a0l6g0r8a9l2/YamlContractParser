@@ -13,9 +13,6 @@ def parseRequest(contrObj: ContractData):
         - тип параметра
     """
     msgType = 'Request'
-    # TODO: Иключить дублирование (4 повт.), пример:
-    # getBrokerAssetsRatesRequest/assetId
-    # getBrokerAssetsRatesRequest/currency
     for subPath, parsms in contrObj.data['paths'].items():
         for item in parsms.values():
             methodName = item['operationId']
