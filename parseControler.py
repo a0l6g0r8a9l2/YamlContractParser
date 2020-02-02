@@ -10,12 +10,11 @@ class ContractData:
         self.allRequestParams = allRequestParams
         self.allResponseParams = allResponseParams
 
-
-class ContractDataViewer:
-
-    def __init__(self, allRequestParams: list = [], allResponseParams: list = []):
-        self.allResponseParams = allRequestParams
-        self.allRequestParams = allResponseParams
+    def saveParams(self, msgType: str, params: tuple):
+        if msgType == 'Request':
+            return self.allRequestParams.append(params)
+        else:
+            return self.allResponseParams.append(params)
 
     def ViewAsExcel(self):
         paramList = []
@@ -26,7 +25,5 @@ class ContractDataViewer:
             df.to_excel(r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx',
                         index=None, header=False)
             print("Job is Done! Go see Excel")
-        except Exception:
-            print("Что-то пошло не так при сохранении в Excel")
-
-# todo:консольный интерфейс: colorama - цветные сообщения, pyinstaller - упаковщик в exe
+        except ValueError:
+            print("Some thing going wrong!", ValueError.__name__)
