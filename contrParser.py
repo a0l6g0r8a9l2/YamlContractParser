@@ -33,7 +33,7 @@ def parseRequest(contrObj: ContractData):
 def parseResposne(contrObj: ContractData):
     """
     Функция парсит ноду 'paths' в контракте
-    :return: список кортежей из:
+    :return: список кортежей из:d
         - имя метода (operationId)
         - имя параметра
         - тип параметра
