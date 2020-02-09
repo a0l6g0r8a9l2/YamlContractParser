@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pandas as pd
-
 
 class ContractData:
 
@@ -16,14 +14,14 @@ class ContractData:
         else:
             self.allResponseParams.append(params)
 
-    def ViewAsExcel(self):
-        paramList = []
-        paramList.extend(self.allRequestParams)
-        paramList.extend(self.allResponseParams)
-        df = pd.DataFrame(paramList)
-        try:
-            df.to_excel(r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx',
-                        index=None, header=False)
-            print("Job is Done! Go see Excel")
-        except ValueError:
-            print("Some thing going wrong!", ValueError.__name__)
+    # def ViewAsExcel(self):
+    #     paramList = []
+    #     paramList.extend(self.allRequestParams)
+    #     paramList.extend(self.allResponseParams)
+    #     df = pd.DataFrame(paramList)
+    #     try:
+    #         df.to_excel(r'C:\Users\Алексей\PycharmProjects\YamlContractParser\export_dataframe.xlsx',
+    #                     index=None, header=False)
+    #         print("Job is Done! Go see Excel")
+    #     except ValueError:
+    #         print("Some thing going wrong!", ValueError.__name__)
