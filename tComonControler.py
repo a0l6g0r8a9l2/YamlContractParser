@@ -36,13 +36,15 @@ def handle_start_help(message: Message):
         data = yaml.safe_load(file.text)
         parsedData = main.getDataContract(data)
         i = 0
+        fullMsg = ''
         while i < len(parsedData):
             if parsedData[i][1] is not None:
-                msg = parsedData[i][0] + ' <b>' + parsedData[i][1] + '</b>'
+                msg = '*' + parsedData[i][0] + '*' + '    ' + '_' + parsedData[i][1] + '_'
             else:
-                msg = parsedData[i][0] + ' '
-            bot.send_message(message.chat.id, text=msg, parse_mode='HTML')
+                msg = '*' + parsedData[i][0] + '*'
             i += 1
+            fullMsg = fullMsg + msg + '\n'
+        bot.reply_to(message, text=fullMsg, parse_mode='Markdown')
     elif message.text == '/start':
         bot.reply_to(message, f'Привет, {user}! \n {startBotText}')
     elif message.text == '/help':
