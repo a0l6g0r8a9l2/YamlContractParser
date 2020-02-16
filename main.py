@@ -1,14 +1,20 @@
-from contrParser import parseRequest
+from contrParser import parseRequest, parseResposne
 from parseControler import ContractData
 
 
-def getDataContract(fileObj: dict):
+def getDataContract(fileObj: dict, context: str):
     """
-    Функция считывает yaml
-    :return: все данные контракта в объекте
+    Функция считывает словарь с данными контракта
+    :return: выбранный тип параметров (по-умолчанию - все)
     """
     contrData = ContractData(data=fileObj)
-    parseRequest(contrData)
-    # parseResposne(contrData)
-    print(contrData.allRequestParams)
-    return contrData.allRequestParams
+    if context == 'Request':
+        parseRequest(contrData)
+        return contrData.allRequestParams
+    elif context == 'Response':
+        parseResposne(contrData)
+        return contrData.allResponseParams
+    else:
+        parseRequest(contrData)
+        parseResposne(contrData)
+    return contrData.allRequestParams + contrData.allResponseParams

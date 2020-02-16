@@ -23,6 +23,12 @@ startBotText = 'Для начала работы отправь мне YAML-фа
 
 helpBotText = 'не поддерживается следующие keywords: allOf, anyOf, Links'
 
+msgTypes = {
+    'Входящие параметры': 'Request',
+    'Исходящие параметры': 'Response',
+    'Все параметры': 'All'
+}
+
 
 @bot.message_handler(commands=['start', 'help', 'about'])
 @bot.message_handler(content_types=['document'])
@@ -34,7 +40,7 @@ def handle_start_help(message: Message):
         file = requests.get(f'https://api.telegram.org/file/bot{API_TOKEN}/{file_info.file_path}',
                             proxies=proxies, stream=True)
         data = yaml.safe_load(file.text)
-        parsedData = main.getDataContract(data)
+        parsedData = main.getDataContract(data, context=msgTypes['Все параметры'])
         i = 0
         fullMsg = ''
         while i < len(parsedData):

@@ -3,7 +3,11 @@ from __future__ import annotations
 
 class ContractData:
 
-    def __init__(self, data: dict, allRequestParams: list = [], allResponseParams: list = []):
+    def __init__(self, data: dict, allRequestParams=None, allResponseParams=None):
+        if allResponseParams is None:
+            allResponseParams = []
+        if allRequestParams is None:
+            allRequestParams = []
         self.data = data
         self.allRequestParams = allRequestParams
         self.allResponseParams = allResponseParams
