@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from parseControler import ContractData
+from extraDataControler import ContractData
 
 
 class CommonNodeParser:

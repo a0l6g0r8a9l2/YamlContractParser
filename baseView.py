@@ -8,7 +8,7 @@ import yaml
 from telebot import types
 from telebot.types import Message
 
-import main
+import dataControler
 from settings import API_TOKEN, proxies
 
 logger = telebot.logger
@@ -17,6 +17,7 @@ telebot.logger.setLevel(logging.INFO)
 bot = telebot.TeleBot(API_TOKEN)
 telebot.apihelper.proxy = proxies
 
+# TODO: перенести текстовки сообщений в конфиг
 aboutBotText = 'Я - простой бот для парсинга YAML контрактов. \nОснованный на Swagger Open API Specification. ' \
                '\nДля начала работы введи команду /start или просто брось мне YAML-файл.' \
                '\nДля информации о возможностях и ограничениях бота введи команду /help.'
@@ -41,7 +42,7 @@ def common_doc_handler(message: Message):
         file = requests.get(f'https://api.telegram.org/file/bot{API_TOKEN}/{file_info.file_path}',
                             proxies=proxies, stream=True, timeout=60)
         data = yaml.safe_load(file.text)
-        with open(f'contract_{message.chat.id}.yaml', 'wb') as f:
+        with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'wb') as f:
             pickle.dump(data, f)
         markup = types.ReplyKeyboardMarkup(row_width=1)
         itembtn1 = types.KeyboardButton(list(msgTypes.keys())[0])
@@ -64,9 +65,9 @@ def common_comand_handler(message: Message):
 
 @bot.message_handler(func=lambda message: message.text in msgTypes.keys(), content_types=['text'])
 def common_result_handler(message):
-    with open(f'contract_{message.chat.id}.yaml', 'rb') as f:
+    with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'rb') as f:
         data = pickle.load(f)
-    parsedData = main.getDataContract(data, context=msgTypes[message.text])
+    parsedData = dataControler.getDataContract(data, context=msgTypes[message.text])
     i = 0
     fullMsg = ''
     while i < len(parsedData):

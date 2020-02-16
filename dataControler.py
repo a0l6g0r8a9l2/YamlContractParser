@@ -1,5 +1,5 @@
-from contrParser import parseRequest, parseResposne
-from parseControler import ContractData
+from extraDataControler import ContractData
+from extraModelFunc import parseRequest, parseResposne
 
 
 def getDataContract(fileObj: dict, context: str):

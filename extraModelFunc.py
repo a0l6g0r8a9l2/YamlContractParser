@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from commonFunc import CommonNodeParser as Cnd
-from parseControler import ContractData
+from baseModelFunc import CommonNodeParser as Cnd
+from extraDataControler import ContractData
 
 
 def parseRequest(contrObj: ContractData):
