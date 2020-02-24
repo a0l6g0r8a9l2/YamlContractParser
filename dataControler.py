@@ -2,19 +2,19 @@ from extraDataControler import ContractData
 from extraModelFunc import parseRequest, parseResposne
 
 
-def getDataContract(fileObj: dict, context: str):
+def getDataContract(fileObj: dict, contextParams: str, contextPath: str):
     """
     Функция считывает словарь с данными контракта
     :return: выбранный тип параметров (по-умолчанию - все)
     """
     contrData = ContractData(data=fileObj)
-    if context == 'Request':
-        parseRequest(contrData)
+    if contextParams == 'Request':
+        parseRequest(contrData, contextPath=contextPath)
         return contrData.allRequestParams
-    elif context == 'Response':
-        parseResposne(contrData)
+    elif contextParams == 'Response':
+        parseResposne(contrData, contextPath=contextPath)
         return contrData.allResponseParams
     else:
-        parseRequest(contrData)
-        parseResposne(contrData)
+        parseRequest(contrData, contextPath=contextPath)
+        parseResposne(contrData, contextPath=contextPath)
     return contrData.allRequestParams + contrData.allResponseParams

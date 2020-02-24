@@ -4,11 +4,11 @@ from extraDataControler import ContractData
 
 
 class CommonNodeParser:
-    def __init__(self, msgType: str, methodName: str, contrObj: ContractData):
-        # self.nodeObj = nodeObj
+    def __init__(self, msgType: str, methodName: str, contrObj: ContractData, msgContext: str):
         self.msgType = msgType
         self.methodName = methodName
         self.contrObj = contrObj
+        self.msgContext = msgContext
 
     def rootSearch(self, nodeObj: dict):
         """
@@ -25,7 +25,7 @@ class CommonNodeParser:
             self.propSearch(nodeObj)
         else:
             nameParam, typeParam = self.methodName + self.msgType + '/' + nodeObj['name'], nodeObj['type']
-            self.contrObj.saveParams(self.msgType, (nameParam, typeParam))
+            self.contrObj.saveParams(self.msgContext, (nameParam, typeParam))
 
     def propSearch(self, nodeObj: dict, nestedCollection: str = ''):
         """
@@ -38,7 +38,7 @@ class CommonNodeParser:
             for keys, values in nodeObj['properties'].items():
                 if keys != 'items':
                     nameParam, typeParam = self.methodName + self.msgType + '/' + nestedCollection + keys, values['type']
-                    self.contrObj.saveParams(self.msgType, (nameParam, typeParam))
+                    self.contrObj.saveParams(self.msgContext, (nameParam, typeParam))
                 else:
                     self.rootSearch(nodeObj['properties'])
 
@@ -53,7 +53,7 @@ class CommonNodeParser:
             definNode, defineNodeName = nodeObj['items']['$ref'].split('/')[1:3]
             for dkeys, ditems in self.contrObj.data[definNode][defineNodeName]['properties'].items():
                 nameParam, typeParam = self.methodName + self.msgType + '/' + nestedCollection + dkeys, ditems['type']  # параметры
-                self.contrObj.saveParams(self.msgType, (nameParam, typeParam))
+                self.contrObj.saveParams(self.msgContext, (nameParam, typeParam))
         elif '$ref' in nodeObj.keys():
             definNode, defineNodeName = nodeObj['$ref'].split('/')[1:3]
             for dkeys, ditems in self.contrObj.data[definNode][defineNodeName]['properties'].items():
@@ -63,4 +63,4 @@ class CommonNodeParser:
                 else:
                     nameParam, typeParam = self.methodName + self.msgType + '/' + nestedCollection + dkeys, ditems[
                         'type']  # параметры
-                    self.contrObj.saveParams(self.msgType, (nameParam, typeParam))
+                    self.contrObj.saveParams(self.msgContext, (nameParam, typeParam))

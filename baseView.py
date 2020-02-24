@@ -32,6 +32,20 @@ msgTypes = {
     'Все параметры': 'All'
 }
 
+pathTypes = {
+    'paths': 'paths',
+    'operationId': 'operationId'
+}
+
+
+class ContextForParse:
+    def __init__(self, msgType: str = list(msgTypes.values())[0], pathType: str = list(pathTypes.values())[0]):
+        self.msgType = msgType
+        self.pathType = pathType
+
+
+context = ContextForParse()
+
 
 @bot.message_handler(commands=['start', 'help', 'about'])
 @bot.message_handler(content_types=['document'])
@@ -64,10 +78,21 @@ def common_comand_handler(message: Message):
 
 
 @bot.message_handler(func=lambda message: message.text in msgTypes.keys(), content_types=['text'])
-def common_result_handler(message):
+def common_result_handler_1(message):
+    context.msgType = msgTypes[message.text]
+    markup = types.ReplyKeyboardMarkup(row_width=1)
+    itembtn1 = types.KeyboardButton(list(pathTypes.keys())[0])
+    itembtn2 = types.KeyboardButton(list(pathTypes.keys())[1])
+    markup.add(itembtn1, itembtn2)
+    bot.send_message(message.chat.id, "Выбирете тип paths\operationId:", reply_markup=markup)
+
+
+@bot.message_handler(func=lambda message: message.text in pathTypes.keys(), content_types=['text'])
+def common_result_handler_2(message):
     with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'rb') as f:
         data = pickle.load(f)
-    parsedData = dataControler.getDataContract(data, context=msgTypes[message.text])
+    context.pathType = pathTypes[message.text]
+    parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
     i = 0
     fullMsg = ''
     while i < len(parsedData):
