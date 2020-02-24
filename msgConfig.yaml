@@ -6,7 +6,10 @@ botToUserMessage:
     helpBotText: 'не поддерживается следующие keywords: allOf, anyOf, Links'
 userToBotMessage:
   description: 'Сообщения передаваемые от пользователя к боту'
-  message:
+  messageContext:
     'Входящие параметры': 'Request'
     'Исходящие параметры': 'Response'
     'Все параметры': 'All'
+  pathContext:
+    'paths': 'paths'
+    'operationId': 'operationId'

@@ -93,6 +93,11 @@ def common_result_handler_2(message):
         data = pickle.load(f)
     context.pathType = pathTypes[message.text]
     parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
+    markup = types.ReplyKeyboardMarkup(row_width=1)
+    itembtn1 = types.KeyboardButton(list(msgTypes.keys())[0])
+    itembtn2 = types.KeyboardButton(list(msgTypes.keys())[1])
+    itembtn3 = types.KeyboardButton(list(msgTypes.keys())[2])
+    markup.add(itembtn1, itembtn2, itembtn3)
     i = 0
     fullMsg = ''
     while i < len(parsedData):
@@ -103,9 +108,9 @@ def common_result_handler_2(message):
         i += 1
         fullMsg = fullMsg + msg + '\n'
     if fullMsg != '':
-        bot.reply_to(message, text=fullMsg, parse_mode='Markdown')
+        bot.reply_to(message, text=fullMsg, parse_mode='Markdown', reply_markup=markup)
     else:
-        bot.reply_to(message, f'{message.text} отсутствуют')
+        bot.reply_to(message, f'{message.text} отсутствуют', reply_markup=markup)
 
 
 if __name__ == '__main__':
