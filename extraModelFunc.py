@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from commonFunc import CommonNodeParser as Cnd
-from parseControler import ContractData
+from baseModelFunc import CommonNodeParser as CnP
+from extraDataControler import ContractData
 
 
-def parseRequest(contrObj: ContractData):
+def parseRequest(contrObj: ContractData, contextPath: str = 'operationId'):
     """
     Функция парсит ноду 'paths' в контракте
     :return: список кортежей из:
@@ -12,11 +12,16 @@ def parseRequest(contrObj: ContractData):
         - имя параметра
         - тип параметра
     """
+    msgContext = 'Request'
     msgType = 'Request'
     for subPath, parsms in contrObj.data['paths'].items():
         for item in parsms.values():
-            methodName = item['operationId']
-            reqObj = Cnd(msgType, methodName, contrObj)
+            if contextPath != 'operationId':
+                methodName = subPath
+                msgType = ''
+            else:
+                methodName = item['operationId']
+            reqObj = CnP(msgType, methodName, contrObj, msgContext=msgContext)
             if 'parameters' in item.keys():  # not empty request
                 for dictElems in item['parameters']:
                     if 'schema' not in dictElems:
@@ -27,10 +32,10 @@ def parseRequest(contrObj: ContractData):
                         else:  # 'properties'
                             reqObj.propSearch(dictElems['schema'])
             else:  # empty request
-                contrObj.saveParams(msgType, (methodName + msgType + '/', None))
+                contrObj.saveParams(msgContext, (methodName + msgType + '/', None))
 
 
-def parseResposne(contrObj: ContractData):
+def parseResposne(contrObj: ContractData, contextPath: str = 'operationId'):
     """
     Функция парсит ноду 'paths' в контракте
     :return: список кортежей из:d
@@ -38,16 +43,21 @@ def parseResposne(contrObj: ContractData):
         - имя параметра
         - тип параметра
     """
-    msgType = 'Response'
+    msgContext = 'Response'
+    msgType = 'Request'
     for subPath, parsms in contrObj.data['paths'].items():
         for item in parsms.values():
-            methodName = item['operationId']
-            resObj = Cnd(msgType, methodName, contrObj)
+            if contextPath != 'operationId':
+                methodName = subPath
+                msgType = ''
+            else:
+                methodName = item['operationId']
+            resObj = CnP(msgType, methodName, contrObj, msgContext=msgContext)
             if 'responses' in item.keys():  # not empty Response
                 for keys, vals in item['responses'].items():
                     if keys == '200':
                         if 'schema' not in vals:
-                            contrObj.saveParams(msgType, (methodName + msgType + '/', None))
+                            contrObj.saveParams(msgContext, (methodName + msgType + '/', None))
                         else:  # функция поиска в schema def
                             if '$ref' in vals['schema']:
                                 resObj.definSearch(vals['schema'])

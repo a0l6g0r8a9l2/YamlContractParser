@@ -1,0 +1,15 @@
+botToUserMessage:
+  description: 'Сообщения передаваемые от бота к пользователю'
+  message:
+    aboutBotText: 'Я - простой бот для парсинга YAML контрактов. Основанный на Swagger Open API Specification. Для начала работы введи команду /start или просто брось мне YAML-файл. Для информации о возможностях и ограничениях бота введи команду /help.'
+    startBotText: 'Для начала работы отправь мне YAML-файл контракта. \n Получаемые данные нигде не сохраняются.'
+    helpBotText: 'не поддерживается следующие keywords: allOf, anyOf, Links'
+userToBotMessage:
+  description: 'Сообщения передаваемые от пользователя к боту'
+  messageContext:
+    'Входящие параметры': 'Request'
+    'Исходящие параметры': 'Response'
+    'Все параметры': 'All'
+  pathContext:
+    'paths': 'paths'
+    'operationId': 'operationId'
