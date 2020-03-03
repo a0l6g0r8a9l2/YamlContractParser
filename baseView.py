@@ -9,11 +9,12 @@ from telebot import types
 from telebot.types import Message
 
 import dataControler
-from settings import API_TOKEN, proxies
+from config import load_config
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
-
+proxies = load_config()[1]
+API_TOKEN = load_config()[0]
 bot = telebot.TeleBot(API_TOKEN)
 telebot.apihelper.proxy = proxies
 
@@ -47,7 +48,6 @@ class ContextForParse:
 context = ContextForParse()
 
 
-@bot.message_handler(commands=['start', 'help', 'about'])
 @bot.message_handler(content_types=['document'])
 def common_doc_handler(message: Message):
     if message.content_type == 'document' and message.document.mime_type == 'application/x-yaml':
