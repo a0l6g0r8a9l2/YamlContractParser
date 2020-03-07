@@ -10,7 +10,6 @@ from telebot.types import Message
 import dataControler
 from config import load_config
 
-logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 proxies = load_config()[1]
 API_TOKEN = load_config()[0]
