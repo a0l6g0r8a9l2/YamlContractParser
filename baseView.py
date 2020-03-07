@@ -87,8 +87,11 @@ def common_result_handler_1(message):
 
 @bot.message_handler(func=lambda message: message.text in pathTypes.keys(), content_types=['text'])
 def common_result_handler_2(message):
-    with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'rb') as f:
-        data = pickle.load(f)
+    try:
+        with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'rb') as f:
+            data = pickle.load(f)
+    except(FileNotFoundError):
+        pass
     context.pathType = pathTypes[message.text]
     parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
     markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
