@@ -90,10 +90,10 @@ def common_result_handler_2(message):
     try:
         with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'rb') as f:
             data = pickle.load(f)
+        context.pathType = pathTypes[message.text]
+        parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
     except FileNotFoundError:
         pass
-    context.pathType = pathTypes[message.text]
-    parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
     markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
     itembtn1 = telebot.types.KeyboardButton(list(msgTypes.keys())[0])
     itembtn2 = telebot.types.KeyboardButton(list(msgTypes.keys())[1])
