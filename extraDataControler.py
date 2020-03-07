@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-
 class ContractData:
 
     def __init__(self, data: dict, allRequestParams=None, allResponseParams=None):

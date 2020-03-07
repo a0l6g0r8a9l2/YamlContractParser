@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from baseModelFunc import CommonNodeParser as CnP
 from extraDataControler import ContractData
 
