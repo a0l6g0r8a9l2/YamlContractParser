@@ -90,7 +90,7 @@ def common_result_handler_2(message):
     try:
         with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'rb') as f:
             data = pickle.load(f)
-    except(FileNotFoundError):
+    except FileNotFoundError:
         pass
     context.pathType = pathTypes[message.text]
     parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
