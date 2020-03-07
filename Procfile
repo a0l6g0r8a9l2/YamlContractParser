@@ -1,1 +1,1 @@
-web: python baseView.py
+worker: python baseView.py
