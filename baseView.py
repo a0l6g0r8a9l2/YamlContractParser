@@ -1,5 +1,4 @@
 #! C:\Users\Алексей\PycharmProjects\YamlContractParser\python-virtual-environments\env python
-import logging
 import pickle
 
 import requests
@@ -10,7 +9,8 @@ from telebot.types import Message
 import dataControler
 from config import load_config
 
-telebot.logger.setLevel(logging.INFO)
+# logger = telebot.logger
+# telebot.logger.setLevel(logging.INFO)
 proxies = load_config()[1]
 API_TOKEN = load_config()[0]
 bot = telebot.TeleBot(API_TOKEN)
