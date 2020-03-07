@@ -5,7 +5,6 @@ import pickle
 import requests
 import telebot
 import yaml
-from telebot import types
 from telebot.types import Message
 
 import dataControler
@@ -58,10 +57,10 @@ def common_doc_handler(message: Message):
         data = yaml.safe_load(file.text)
         with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'wb') as f:
             pickle.dump(data, f)
-        markup = types.ReplyKeyboardMarkup(row_width=1)
-        itembtn1 = types.KeyboardButton(list(msgTypes.keys())[0])
-        itembtn2 = types.KeyboardButton(list(msgTypes.keys())[1])
-        itembtn3 = types.KeyboardButton(list(msgTypes.keys())[2])
+        markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
+        itembtn1 = telebot.types.KeyboardButton(list(msgTypes.keys())[0])
+        itembtn2 = telebot.types.KeyboardButton(list(msgTypes.keys())[1])
+        itembtn3 = telebot.types.KeyboardButton(list(msgTypes.keys())[2])
         markup.add(itembtn1, itembtn2, itembtn3)
         bot.send_message(message.chat.id, "Выбирете тип параметров:", reply_markup=markup)
 
@@ -80,9 +79,9 @@ def common_comand_handler(message: Message):
 @bot.message_handler(func=lambda message: message.text in msgTypes.keys(), content_types=['text'])
 def common_result_handler_1(message):
     context.msgType = msgTypes[message.text]
-    markup = types.ReplyKeyboardMarkup(row_width=1)
-    itembtn1 = types.KeyboardButton(list(pathTypes.keys())[0])
-    itembtn2 = types.KeyboardButton(list(pathTypes.keys())[1])
+    markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
+    itembtn1 = telebot.types.KeyboardButton(list(pathTypes.keys())[0])
+    itembtn2 = telebot.types.KeyboardButton(list(pathTypes.keys())[1])
     markup.add(itembtn1, itembtn2)
     bot.send_message(message.chat.id, "Выбирете тип paths\operationId:", reply_markup=markup)
 
@@ -93,10 +92,10 @@ def common_result_handler_2(message):
         data = pickle.load(f)
     context.pathType = pathTypes[message.text]
     parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
-    markup = types.ReplyKeyboardMarkup(row_width=1)
-    itembtn1 = types.KeyboardButton(list(msgTypes.keys())[0])
-    itembtn2 = types.KeyboardButton(list(msgTypes.keys())[1])
-    itembtn3 = types.KeyboardButton(list(msgTypes.keys())[2])
+    markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
+    itembtn1 = telebot.types.KeyboardButton(list(msgTypes.keys())[0])
+    itembtn2 = telebot.types.KeyboardButton(list(msgTypes.keys())[1])
+    itembtn3 = telebot.types.KeyboardButton(list(msgTypes.keys())[2])
     markup.add(itembtn1, itembtn2, itembtn3)
     i = 0
     fullMsg = ''
