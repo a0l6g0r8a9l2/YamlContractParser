@@ -1,1 +1,1 @@
-web: baseModelFunc.py
+web: python baseModelFunc.py
