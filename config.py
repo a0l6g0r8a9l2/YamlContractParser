@@ -11,9 +11,9 @@ def load_config():
         logger.debug("Loaded config \"{}\" - OK".format(conf_name))
         if conf_name != 'prod':
             from settings import API_TOKEN, proxies
-            return API_TOKEN, proxies
+            return API_TOKEN, proxies, conf_name
         else:
-            return os.environ.get('API_TOKEN'), os.environ.get('proxies')
+            return os.environ.get('API_TOKEN'), None, conf_name
     except (TypeError, ValueError, ImportError):
         logger.error("Invalid config \"{}\"")
         sys.exit(1)

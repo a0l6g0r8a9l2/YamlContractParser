@@ -11,10 +11,13 @@ from config import load_config
 
 # logger = telebot.logger
 # telebot.logger.setLevel(logging.INFO)
-proxies = load_config()[1]
+
 API_TOKEN = load_config()[0]
 bot = telebot.TeleBot(API_TOKEN)
-telebot.apihelper.proxy = proxies
+
+if load_config()[2] != 'prod':
+    proxies = load_config()[1]
+    telebot.apihelper.proxy = proxies
 
 # TODO: перенести текстовки сообщений в конфиг
 aboutBotText = 'Я - простой бот для парсинга YAML контрактов. \nОснованный на Swagger Open API Specification. ' \
@@ -51,8 +54,12 @@ def common_doc_handler(message: Message):
     if message.content_type == 'document' and message.document.mime_type == 'application/x-yaml':
         document_id = message.document.file_id
         file_info = bot.get_file(document_id)
-        file = requests.get(f'https://api.telegram.org/file/bot{API_TOKEN}/{file_info.file_path}',
-                            proxies=proxies, stream=True, timeout=60)
+        if load_config()[2] != 'prod':
+            file = requests.get(f'https://api.telegram.org/file/bot{API_TOKEN}/{file_info.file_path}',
+                                proxies=proxies, stream=True, timeout=60)
+        else:
+            file = requests.get(f'https://api.telegram.org/file/bot{API_TOKEN}/{file_info.file_path}',
+                                stream=True, timeout=60)
         data = yaml.safe_load(file.text)
         with open(f'temp_contracts\contract_{message.chat.id}.yaml', 'wb') as f:
             pickle.dump(data, f)
@@ -93,25 +100,27 @@ def common_result_handler_2(message):
         context.pathType = pathTypes[message.text]
         parsedData = dataControler.getDataContract(data, contextParams=context.msgType, contextPath=context.pathType)
     except FileNotFoundError:
-        pass
-    markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
-    itembtn1 = telebot.types.KeyboardButton(list(msgTypes.keys())[0])
-    itembtn2 = telebot.types.KeyboardButton(list(msgTypes.keys())[1])
-    itembtn3 = telebot.types.KeyboardButton(list(msgTypes.keys())[2])
-    markup.add(itembtn1, itembtn2, itembtn3)
-    i = 0
-    fullMsg = ''
-    while i < len(parsedData):
-        if parsedData[i][1] is not None:
-            msg = '*' + parsedData[i][0] + '*' + '    ' + '_' + parsedData[i][1] + '_'
-        else:
-            msg = '*' + parsedData[i][0] + '*'
-        i += 1
-        fullMsg = fullMsg + msg + '\n'
-    if fullMsg != '':
-        bot.reply_to(message, text=fullMsg, parse_mode='Markdown', reply_markup=markup)
+        bot.reply_to(message, f'Файл не найден')
+
     else:
-        bot.reply_to(message, f'{message.text} отсутствуют', reply_markup=markup)
+        markup = telebot.types.ReplyKeyboardMarkup(row_width=1)
+        itembtn1 = telebot.types.KeyboardButton(list(msgTypes.keys())[0])
+        itembtn2 = telebot.types.KeyboardButton(list(msgTypes.keys())[1])
+        itembtn3 = telebot.types.KeyboardButton(list(msgTypes.keys())[2])
+        markup.add(itembtn1, itembtn2, itembtn3)
+        i = 0
+        fullMsg = ''
+        while i < len(parsedData):
+            if parsedData[i][1] is not None:
+                msg = '*' + parsedData[i][0] + '*' + '    ' + '_' + parsedData[i][1] + '_'
+            else:
+                msg = '*' + parsedData[i][0] + '*'
+            i += 1
+            fullMsg = fullMsg + msg + '\n'
+        if fullMsg != '':
+            bot.reply_to(message, text=fullMsg, parse_mode='Markdown', reply_markup=markup)
+        else:
+            bot.reply_to(message, f'{message.text} отсутствуют', reply_markup=markup)
 
 
 if __name__ == '__main__':
