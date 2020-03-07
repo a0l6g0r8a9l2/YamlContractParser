@@ -1,4 +1,4 @@
-requests
+requests==2.7.0
 PyYAML
 telebot
 aiogram==2.6.1
